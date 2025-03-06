@@ -49,7 +49,7 @@ financial-assistant-prototype
 - 30 days per month
 - 100MB of text data to be consulted monthly
 
-#### Embedding usafe by interaction:
+#### Embedding usage by interaction:
 - 1000 tokens per interaction (Cohere Embed Multilingual)
 
 #### LLM Usage by interaction:
