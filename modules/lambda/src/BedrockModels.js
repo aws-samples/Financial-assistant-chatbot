@@ -20,36 +20,40 @@ export class BedrockModels {
   static #CHAT_MODEL_TEMPERATURE = 0.2
   static #CHAT_MODEL_MAX_TOKENS = 1024
   static #CHAT_MODEL_TOP_P = 0.9
-  static #BEDROCK_CLIENT = new BedrockRuntimeClient({ region: "us-east-1" });
-
+  
   #selfQueryModel;
   #chatModel;
   #condenseModel;
+  #bedrockClient;
 
-  constructor(selfQueryModelId, chatModelId,condenseModelId) {
+  constructor(selfQueryModelId, chatModelId, condenseModelId, region) {
+    this.#bedrockClient = new BedrockRuntimeClient({ region: region });
+    
     this.#selfQueryModel = BedrockModels.#BedrockWithDebugListeners({
       model: selfQueryModelId,
-      region: "us-east-1",
+      region: region,
       temperature: BedrockModels.#SELF_QUERY_MODEL_TEMPERATURE,
       maxTokens: BedrockModels.#SELF_QUERY_MODEL_MAX_TOKENS,
       topP: BedrockModels.#SELF_QUERY_MODEL_TOP_P,
-      client: BedrockModels.#BEDROCK_CLIENT,
+      client: this.#bedrockClient,
     }, BedrockModels.SELF_QUERY_LLM_RUN_NAME)
+    
     this.#condenseModel = BedrockModels.#BedrockWithDebugListeners({
       model: condenseModelId,
-      region: "us-east-1",
+      region: region,
       temperature: BedrockModels.#CONDENSE_MODEL_TEMPERATURE,
       maxTokens: BedrockModels.#CONDENSE_MODEL_MAX_TOKENS,
       topP: BedrockModels.#CONDENSE_MODEL_TOP_P,
-      client: BedrockModels.#BEDROCK_CLIENT,
+      client: this.#bedrockClient,
     }, BedrockModels.CONDENSE_LLM_RUN_NAME)
+    
     this.#chatModel = BedrockModels.#BedrockWithDebugListeners({
       model: chatModelId,
-      region: "us-east-1",
+      region: region,
       temperature: BedrockModels.#CHAT_MODEL_TEMPERATURE,
       maxTokens: BedrockModels.#CHAT_MODEL_MAX_TOKENS,
       topP: BedrockModels.#CHAT_MODEL_TOP_P,
-      client: BedrockModels.#BEDROCK_CLIENT,
+      client: this.#bedrockClient,
     }, BedrockModels.CHAT_LLM_RUN_NAME)
   }
 

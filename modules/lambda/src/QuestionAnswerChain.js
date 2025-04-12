@@ -7,6 +7,8 @@ import { SelfQueryRetriever } from "./SelfQueryRetriever.js"
 import { StringOutputParser } from "@langchain/core/output_parsers"
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 
+const AWS_REGION = process.env.AWS_REGION;
+
 export class QuestionAnswerChain {
   static CHAIN_NAME_STANDALONE_QUESTION = "Rephrasing question"
   static CHAIN_NAME_RETRIEVE_DOCUMENTS = "Retrieving documents"
@@ -44,7 +46,7 @@ export class QuestionAnswerChain {
       tableName: dynamoDBHistoryTableName,
       partitionKey: "id",
       sessionId: sessionId,
-      config: {region: "us-east-1"}
+      config: {region: AWS_REGION}
     })
     this.#memory = new BufferWindowMemory({
       chatHistory: chatHistory,

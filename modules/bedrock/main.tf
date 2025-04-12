@@ -212,6 +212,10 @@ resource "aws_secretsmanager_secret_version" "aurora_credentials" {
   })
 }
 
+# Get current AWS region and account ID
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 # Create the Bedrock Knowledge Base
 resource "awscc_bedrock_knowledge_base" "financial_documents" {
   name        = local.kb_name
@@ -221,12 +225,21 @@ resource "awscc_bedrock_knowledge_base" "financial_documents" {
   knowledge_base_configuration = {
     type = "VECTOR"
     vector_knowledge_base_configuration = {
-      embedding_model_arn = var.embedding_model
+      embedding_model_arn = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.embedding_model}"
     }
   }
   
   storage_configuration = {
     type = "OPENSEARCH_SERVERLESS"
+    opensearch_serverless_configuration = {
+      collection_arn    = "arn:aws:aoss:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:collection/${substr("${var.project_name}-collection-${var.environment}", 0, 32)}"
+      vector_index_name = "${var.project_name}-index-${var.environment}"
+      field_mapping = {
+        metadata_field = "metadata"
+        text_field     = "text"
+        vector_field   = "vector"
+      }
+    }
   }
   
   tags = {

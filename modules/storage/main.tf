@@ -33,7 +33,7 @@ resource "aws_s3_bucket" "financial_documents" {
     Environment = var.environment
   }
 
-  # In a production environment, you would want to change this to true
+  # In a production environment, you would want to change this to false
   force_destroy = true
 }
 

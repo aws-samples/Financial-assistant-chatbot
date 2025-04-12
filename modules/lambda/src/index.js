@@ -15,14 +15,16 @@ const CHAT_MODEL_ID = process.env.CHAT_MODEL_ID
 const LANGUAGE = process.env.LANGUAGE
 const NUMBER_OF_RESULTS = parseInt(process.env.NUMBER_OF_RESULTS)
 const NUMBER_OF_CHAT_INTERACTIONS_TO_REMEMBER = parseInt(process.env.NUMBER_OF_CHAT_INTERACTIONS_TO_REMEMBER)
+const AWS_REGION = process.env.AWS_REGION
 
 // Initialize clients and models
 const bedrockModels = new BedrockModels(
   SELF_QUERY_MODEL_ID,
   CHAT_MODEL_ID,
-  CONDENSE_MODEL_ID
+  CONDENSE_MODEL_ID,
+  AWS_REGION
 )
-const dynamoDBClient = new DynamoDBClient({region:"us-east-1"})
+const dynamoDBClient = new DynamoDBClient({region: AWS_REGION})
 
 export const handler = awslambda.streamifyResponse(
   async (event, responseStream, _context) => {

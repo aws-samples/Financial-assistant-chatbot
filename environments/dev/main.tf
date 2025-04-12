@@ -1,11 +1,15 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-2"
+}
+
+provider "awscc" {
+  region = "us-west-2"
 }
 
 module "financial_assistant_chatbot" {
   source = "../../"
   
-  aws_region  = "us-east-1"
+  aws_region  = "us-west-2"
   environment = "dev"
   project_name = "financial-assistant-chatbot"
   

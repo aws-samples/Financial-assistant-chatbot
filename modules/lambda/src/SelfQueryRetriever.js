@@ -6,6 +6,8 @@ import { BedrockAgentRuntimeClient, RetrieveCommand } from "@aws-sdk/client-bedr
 
 const SEARCH_TYPE = process.env.SEARCH_TYPE;
 
+const AWS_REGION = process.env.AWS_REGION;
+
 export class SelfQueryRetriever {
   #numberOfResults
   #selfQueryModel
@@ -13,12 +15,11 @@ export class SelfQueryRetriever {
   #kbId
   #bedrockAgentClient
 
-  constructor(numberOfResults, selfQueryModel, selfQueryPromptTemplate,kbId) {
+  constructor(numberOfResults, selfQueryModel, selfQueryPromptTemplate, kbId) {
     this.#kbId = kbId
     this.#numberOfResults = numberOfResults
     this.#selfQueryModel = selfQueryModel
-    this.#bedrockAgentClient = new BedrockAgentRuntimeClient({ region: "us-east-1" });
-
+    this.#bedrockAgentClient = new BedrockAgentRuntimeClient({ region: AWS_REGION });
 
     this.#selfQueryPrompt = ChatPromptTemplate.fromTemplate(
       selfQueryPromptTemplate

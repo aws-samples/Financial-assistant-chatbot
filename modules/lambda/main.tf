@@ -146,6 +146,7 @@ resource "aws_lambda_function" "bot_chain" {
       LANGCHAIN_VERBOSE                     = "false"
       KNOWLEDGE_BASE_ID                     = var.knowledge_base_id
       SEARCH_TYPE                           = var.search_type
+      AWS_REGION                            = data.aws_region.current.name
     }
   }
 
