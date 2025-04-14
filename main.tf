@@ -10,8 +10,8 @@ module "storage" {
   environment  = local.environment
 }
 
-module "bedrock" {
-  source = "./modules/bedrock"
+module "genai" {
+  source = "./modules/genai"
 
   project_name = local.project_name
   environment  = local.environment
@@ -33,7 +33,7 @@ module "lambda" {
   timeout                             = var.lambda_timeout
   dynamodb_table_name                 = module.storage.dynamodb_table_name
   dynamodb_table_arn                  = module.storage.dynamodb_table_arn
-  knowledge_base_id                   = module.bedrock.knowledge_base_id
+  knowledge_base_id                   = module.genai.knowledge_base_id
   number_of_results                   = var.number_of_results
   number_of_chat_interactions_to_remember = var.number_of_chat_interactions_to_remember
   self_query_model_id                 = var.self_query_model_id

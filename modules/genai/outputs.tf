@@ -1,11 +1,16 @@
 output "knowledge_base_id" {
   description = "The ID of the Bedrock Knowledge Base"
-  value       = awscc_bedrock_knowledge_base.financial_documents.id
+  value       = module.bedrock.default_kb_identifier
 }
 
 output "data_source_id" {
   description = "The ID of the Bedrock Data Source"
-  value       = aws_bedrockagent_data_source.financial_documents.id
+  value       = module.bedrock.s3_data_source_name
+}
+
+output "opensearch_collection" {
+  description = "The OpenSearch Serverless collection created by the Bedrock module"
+  value       = module.bedrock.default_collection
 }
 
 output "aurora_secrets_arn" {

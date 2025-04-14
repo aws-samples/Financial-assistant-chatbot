@@ -1,3 +1,7 @@
+# Get current AWS region and account ID
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 locals {
   kb_name = "${var.project_name}-knowledge-base-${var.environment}"
   ds_name = "${var.project_name}-data-source-${var.environment}"
@@ -60,84 +64,6 @@ Here is the image.
     Name        = "${var.project_name}-parsing-prompt-${var.environment}"
     Environment = var.environment
   }
-}
-
-# Create an IAM role for the Bedrock service
-resource "aws_iam_role" "bedrock_service_role" {
-  name = "${var.project_name}-bedrock-service-role-${var.environment}"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "bedrock.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  tags = {
-    Name        = "${var.project_name}-bedrock-service-role-${var.environment}"
-    Environment = var.environment
-  }
-}
-
-# Create a policy for S3 access
-resource "aws_iam_policy" "s3_access" {
-  name        = "${var.project_name}-s3-access-${var.environment}"
-  description = "Policy for S3 access"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "s3:GetObject",
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
-        ]
-        Effect   = "Allow"
-        Resource = [
-          var.archive_bucket_arn,
-          "${var.archive_bucket_arn}/*"
-        ]
-      }
-    ]
-  })
-}
-
-# Attach the S3 access policy to the Bedrock service role
-resource "aws_iam_role_policy_attachment" "s3_access" {
-  role       = aws_iam_role.bedrock_service_role.name
-  policy_arn = aws_iam_policy.s3_access.arn
-}
-
-# Create a policy for Bedrock model access
-resource "aws_iam_policy" "bedrock_model_access" {
-  name        = "${var.project_name}-bedrock-model-access-${var.environment}"
-  description = "Policy for Bedrock model access"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "bedrock:InvokeModel"
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-# Attach the Bedrock model access policy to the Bedrock service role
-resource "aws_iam_role_policy_attachment" "bedrock_model_access" {
-  role       = aws_iam_role.bedrock_service_role.name
-  policy_arn = aws_iam_policy.bedrock_model_access.arn
 }
 
 # Create Aurora PostgreSQL database if use_aurora is true
@@ -212,57 +138,34 @@ resource "aws_secretsmanager_secret_version" "aurora_credentials" {
   })
 }
 
-# Get current AWS region and account ID
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
-
-# Create the Bedrock Knowledge Base
-resource "awscc_bedrock_knowledge_base" "financial_documents" {
-  name        = local.kb_name
-  description = "Knowledge base for financial documents"
-  role_arn    = aws_iam_role.bedrock_service_role.arn
+# Use the aws-ia/bedrock/aws module to create the Bedrock Knowledge Base
+module "bedrock" {
+  source  = "aws-ia/bedrock/aws"
+  version = "0.0.16"
   
-  knowledge_base_configuration = {
-    type = "VECTOR"
-    vector_knowledge_base_configuration = {
-      embedding_model_arn = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.embedding_model}"
-    }
-  }
+  # Create a default knowledge base with OpenSearch Serverless
+  create_default_kb = true
+  create_agent = false
   
-  storage_configuration = {
-    type = "OPENSEARCH_SERVERLESS"
-    opensearch_serverless_configuration = {
-      collection_arn    = "arn:aws:aoss:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:collection/${substr("${var.project_name}-collection-${var.environment}", 0, 32)}"
-      vector_index_name = "${var.project_name}-index-${var.environment}"
-      field_mapping = {
-        metadata_field = "metadata"
-        text_field     = "text"
-        vector_field   = "vector"
-      }
-    }
-  }
+  # Knowledge base configuration
+  kb_name = local.kb_name
+  kb_description = "Knowledge base for financial documents"
+  kb_embedding_model_arn = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.embedding_model}"
   
+  # S3 data source configuration
+  create_s3_data_source = true
+  kb_s3_data_source = var.archive_bucket_arn
+  
+  # Tags
   tags = {
     Name        = local.kb_name
     Environment = var.environment
+    Project     = var.project_name
   }
 }
 
-# Create the Bedrock Data Source
-resource "aws_bedrockagent_data_source" "financial_documents" {
-  knowledge_base_id = awscc_bedrock_knowledge_base.financial_documents.id
-  name              = local.ds_name
-  
-  data_source_configuration {
-    type = "S3"
-    s3_configuration {
-      bucket_arn = var.archive_bucket_arn
-    }
-  }
-  
-  vector_ingestion_configuration {
-    chunking_configuration {
-      chunking_strategy = "SEMANTIC"
-    }
-  }
+# Configure the OpenSearch provider to use the collection endpoint from the module
+provider "opensearch" {
+  url         = module.bedrock.default_collection.collection_endpoint
+  healthcheck = false
 }

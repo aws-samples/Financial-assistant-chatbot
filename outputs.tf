@@ -10,7 +10,7 @@ output "lambda_function_arn" {
 
 output "knowledge_base_id" {
   description = "The ID of the Bedrock Knowledge Base"
-  value       = module.bedrock.knowledge_base_id
+  value       = module.genai.knowledge_base_id
 }
 
 output "resume_bucket_name" {
@@ -20,7 +20,7 @@ output "resume_bucket_name" {
 
 output "data_source_id" {
   description = "The ID of the Bedrock Data Source"
-  value       = module.bedrock.data_source_id
+  value       = module.genai.data_source_id
 }
 
 output "cognito_user_pool_id" {
@@ -40,5 +40,5 @@ output "cognito_identity_pool_id" {
 
 output "aurora_secrets_arn" {
   description = "The ARN of the Aurora Secrets (only if use_aurora is true)"
-  value       = var.use_aurora ? module.bedrock.aurora_secrets_arn : null
+  value       = var.use_aurora ? module.genai.aurora_secrets_arn : null
 }
