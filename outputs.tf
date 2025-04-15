@@ -18,6 +18,11 @@ output "resume_bucket_name" {
   value       = module.storage.bucket_name
 }
 
+output "bucket_id" {
+  description = "The ID of the S3 bucket for financial documents"
+  value       = module.storage.bucket_id
+}
+
 output "data_source_id" {
   description = "The ID of the Bedrock Data Source"
   value       = module.genai.data_source_id

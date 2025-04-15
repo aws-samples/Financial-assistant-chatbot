@@ -5,7 +5,7 @@ output "knowledge_base_id" {
 
 output "data_source_id" {
   description = "The ID of the Bedrock Data Source"
-  value       = module.bedrock.s3_data_source_name
+  value       = module.bedrock.datasource_identifier
 }
 
 output "opensearch_collection" {

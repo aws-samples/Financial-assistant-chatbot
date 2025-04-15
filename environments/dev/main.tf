@@ -50,6 +50,11 @@ output "resume_bucket_name" {
   value       = module.financial_assistant_chatbot.resume_bucket_name
 }
 
+output "bucket_id" {
+  description = "The ID of the S3 bucket for financial documents"
+  value       = module.financial_assistant_chatbot.bucket_id
+}
+
 output "cognito_user_pool_id" {
   description = "The ID of the Cognito User Pool"
   value       = module.financial_assistant_chatbot.cognito_user_pool_id
@@ -63,4 +68,9 @@ output "cognito_user_pool_client_id" {
 output "cognito_identity_pool_id" {
   description = "The ID of the Cognito Identity Pool"
   value       = module.financial_assistant_chatbot.cognito_identity_pool_id
+}
+
+output "data_source_id" {
+  description = "The ID of the Bedrock Data Source"
+  value       = module.financial_assistant_chatbot.data_source_id
 }

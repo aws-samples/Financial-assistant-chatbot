@@ -43,3 +43,6 @@ modules/lambda/lambda_function.zip
 # Ignore OS specific files
 .DS_Store
 Thumbs.db
+
+# python venv
+.venv
