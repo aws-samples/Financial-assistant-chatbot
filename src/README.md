@@ -237,13 +237,15 @@ This is the front-end demo application. With this, you'll be able to interact wi
 2. Create a `.env` file by duplicating the included `example.env` and replace the property values with the values retrieved from the Stack outputs.
 
   ```properties
-  VITE_REGION_NAME="<REGION_NAME>"
-  VITE_COGNITO_USER_POOL_ID="<COGNITO_USER_POOL_ID>"
-  VITE_COGNITO_USER_POOL_CLIENT_ID="<COGNITO_USER_POOL_CLIENT_ID>"
-  VITE_COGNITO_IDENTITY_POOL_ID="<COGNITO_IDENTITY_POOL_ID>"
-  VITE_API_FUNCTION_ARN="<API_FUNCTION_ARN>"
-  VITE_APP_NAME="Financial Assistant"
-  VITE_LOCAL_MOCK="FALSE"
+VITE_API_GATEWAY_REST_API_ENDPOINT=""
+VITE_API_FUNCTION_ARN=""
+VITE_AWS_REGION="us-east-1"
+VITE_COGNITO_USER_POOL_ID=""
+VITE_COGNITO_USER_POOL_CLIENT_ID=""
+VITE_COGNITO_IDENTITY_POOL_ID=""
+VITE_API_NAME="RestAPI"
+VITE_APP_LOGO_URL=""
+VITE_APP_NAME="Financial Assistant powered by GenAI"
   ```
 
 3. Go to **src/webapp**, install dependencies:
