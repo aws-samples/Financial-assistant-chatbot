@@ -118,6 +118,20 @@ data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/src"
   output_path = "${path.module}/lambda_function.zip"
+  
+  # This will run npm install before creating the zip
+  depends_on = [null_resource.install_dependencies]
+}
+
+resource "null_resource" "install_dependencies" {
+  triggers = {
+    # Trigger rebuild when any of the source files change
+    source_code_hash = filebase64sha256("${path.module}/src/package.json")
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.module}/src && npm install --production"
+  }
 }
 
 # Create the Lambda function
