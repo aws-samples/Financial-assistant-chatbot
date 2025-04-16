@@ -9,6 +9,8 @@ With the new Generative AI system in place, the AI model can ingest and process 
 > [!NOTE] 
 > This a scenario for this project only. You can personalize the prompts and the data to bring answers related to any data and scope you like. We recommend you choosing the data you want and create your metadata accordingly to improve search results.
 
+This repository is also available in terraform format. Check out the [terraform](https://github.com/aws-samples/Financial-assistant-chatbot/tree/terraform) branch.
+
 ## Architecture
 
 ![High Level Architecture](./images/prototype.jpg)
