@@ -27,7 +27,7 @@ project-root/
 ├── README.md         # Project documentation
 ├── modules/          # Reusable modules folder
 │   ├── lambda/       # Lambda function module
-│   ├── bedrock/      # Bedrock module
+│   ├── genai/        # Generative AI module, uses the [aws-ia/bedrock](https://github.com/aws-ia/terraform-aws-bedrock) module
 │   ├── cognito/      # Cognito module
 │   └── storage/      # DynamoDB and S3 module
 └── environments/     # Environment-specific configurations
@@ -36,14 +36,17 @@ project-root/
 
 ## Prerequisites
 
-- Terraform >= 1.0.0
+- Terraform >= v1.11.4
 - AWS CLI configured with appropriate credentials
 - Access to Amazon Bedrock models (Claude 3 Haiku and Claude 3.5 Sonnet)
 
 ## Deployment
 
 1. Clone the repository
-2. Navigate to the project directory
+2. Navigate to the dev environment directory `environments/dev`
+   ```
+   cd environments/dev
+   ```
 3. Initialize Terraform:
    ```
    terraform init
@@ -70,7 +73,7 @@ The project can be configured through the `terraform.tfvars` file. Key configura
 ## Aurora Vector Store Option
 
 The project supports two vector store options:
-1. Default Bedrock Knowledge Base vector store
+1. Default Bedrock Knowledge Base vector store using Amazon OpenSearch Service Serverless
 2. Amazon Aurora PostgreSQL vector store
 
 To use Aurora, set `use_aurora = true` in the `terraform.tfvars` file.
