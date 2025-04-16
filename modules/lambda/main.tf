@@ -136,6 +136,12 @@ resource "null_resource" "install_dependencies" {
 
 # Create the Lambda function
 resource "aws_lambda_function" "bot_chain" {
+  #checkov:skip=CKV_AWS_272:Ensure AWS Lambda function is configured to validate code-signing - For prototyping we intentionally do not check code signing. We recommend you evaluate your need in production.
+  #checkov:skip=CKV_AWS_173:Check encryption settings for Lambda environmental variable - ENV are not sensitive.
+  #checkov:skip=CKV_AWS_116:Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ) - Use case does not warrant a DLQ.
+  #checkov:skip=CKV_AWS_117:Ensure that AWS Lambda function is configured inside a VPC - For prototyping we intentionally did not add this lambda to a VPC. We recommend you evaluate your need in production, given your security posture.
+  #checkov:skip=CKV_AWS_50:X-Ray tracing is enabled for Lambda - For prototyping we intentionally did not set up X-Ray. We recommend you evaluate your need in production.
+  
   function_name = local.function_name
   description   = "Financial Assistant Chatbot Lambda Function"
   role          = aws_iam_role.lambda_role.arn
@@ -147,6 +153,7 @@ resource "aws_lambda_function" "bot_chain" {
   
   memory_size = var.memory_size
   timeout     = var.timeout
+  reserved_concurrent_executions = 10
 
   environment {
     variables = {

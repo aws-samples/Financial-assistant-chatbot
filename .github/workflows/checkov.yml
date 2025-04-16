@@ -1,0 +1,46 @@
+name: Checkov Security Scan
+
+on:
+  push:
+    branches: [terraform]
+  pull_request:
+    branches: [terraform]
+  # Allows manual triggering of the workflow
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: Checkov Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Run Checkov scan
+      - name: Checkov Security Scan
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          # Optional parameters - uncomment as needed
+          # check: CKV_AWS_1,CKV_AWS_2  # Run only specific checks
+          # skip_check: CKV_AWS_3,CKV_AWS_4  # Skip specific checks
+          # quiet: true  # Display only failed checks
+          # soft_fail: true  # Don't return error code if there are failed checks
+          framework: terraform # Scan only terraform files
+          output_format: sarif # SARIF format for GitHub security tab integration
+          output_file_path: results/checkov.sarif # Output results file
+
+      # Upload SARIF file to GitHub Security tab
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+          sarif_file: results/checkov.sarif
+          wait-for-processing: true

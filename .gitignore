@@ -46,3 +46,7 @@ Thumbs.db
 
 # python venv
 .venv
+
+# checkov
+results.sarif
+checkov_results.json/results_json.json

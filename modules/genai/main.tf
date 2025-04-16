@@ -9,6 +9,8 @@ locals {
 
 # Create the parsing prompt for the Bedrock Knowledge Base
 resource "aws_ssm_parameter" "parsing_prompt" {
+  #checkov:skip=CKV2_AWS_34:AWS SSM Parameter should be Encrypted - For prototyping we are intentionally not encrypting the LLM prompts. We recommend you evaluate your need in production.
+
   name  = "/${var.project_name}/${var.environment}/parsing-prompt"
   type  = "String"
   value = <<-EOT
@@ -68,6 +70,9 @@ Here is the image.
 
 # Create Aurora PostgreSQL database if use_aurora is true
 resource "aws_rds_cluster" "aurora_vector_store" {
+  #checkov:skip=CKV2_AWS_27:Ensure Postgres RDS as aws_rds_cluster has Query Logging enabled - For prototyping we are intentionally not setting this up. We recommend you evaluate your need in production. 
+  #checkov:skip=CKV2_AWS_8:Ensure that RDS clusters has backup plan of AWS Backup - For prototyping we are intentionally not setting up backups. We recommend you evaluate your need in production.
+  
   count = var.use_aurora ? 1 : 0
 
   cluster_identifier      = "${var.project_name}-aurora-${var.environment}"
@@ -114,6 +119,8 @@ resource "random_password" "aurora_password" {
 }
 
 resource "aws_secretsmanager_secret" "aurora_credentials" {
+  #checkov:skip=CKV2_AWS_57:Ensure Secrets Manager secrets should have automatic rotation enabled - For prototyping we are intentionally not rotating the rds password. We recommend you evaluate your need in production.
+
   count = var.use_aurora ? 1 : 0
   
   name = "${var.project_name}-aurora-credentials-${var.environment}"
@@ -140,8 +147,9 @@ resource "aws_secretsmanager_secret_version" "aurora_credentials" {
 
 # Use the aws-ia/bedrock/aws module to create the Bedrock Knowledge Base
 module "bedrock" {
-  source  = "aws-ia/bedrock/aws"
-  version = "0.0.18"
+  # source  = "aws-ia/bedrock/aws"
+  # version = "0.0.18"
+  source = "git::https://github.com/aws-ia/terraform-aws-bedrock.git?ref=14467fee6fe6e733a0aa5146fa973db9f96c39a4"
   
   # Create a default knowledge base with OpenSearch Serverless
   create_default_kb = true
