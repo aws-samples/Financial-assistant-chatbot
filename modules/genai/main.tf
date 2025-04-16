@@ -141,7 +141,7 @@ resource "aws_secretsmanager_secret_version" "aurora_credentials" {
 # Use the aws-ia/bedrock/aws module to create the Bedrock Knowledge Base
 module "bedrock" {
   source  = "aws-ia/bedrock/aws"
-  version = "0.0.16"
+  version = "0.0.18"
   
   # Create a default knowledge base with OpenSearch Serverless
   create_default_kb = true
@@ -151,6 +151,10 @@ module "bedrock" {
   kb_name = local.kb_name
   kb_description = "Knowledge base for financial documents"
   kb_embedding_model_arn = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.embedding_model}"
+
+  # Datasource configuration
+  create_parsing_configuration = true
+  parsing_config_model_arn = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/${var.parsing_model}"
   
   # S3 data source configuration
   create_s3_data_source = true
