@@ -147,9 +147,9 @@ resource "aws_secretsmanager_secret_version" "aurora_credentials" {
 
 # Use the aws-ia/bedrock/aws module to create the Bedrock Knowledge Base
 module "bedrock" {
-  # source  = "aws-ia/bedrock/aws"
-  # version = "0.0.18"
-  source = "git::https://github.com/aws-ia/terraform-aws-bedrock.git?ref=14467fee6fe6e733a0aa5146fa973db9f96c39a4"
+  #checkov:skip=CKV_TF_1:Ensure Terraform module sources use a commit hash - We are intentionally pinning to a version number and source.
+  source  = "aws-ia/bedrock/aws"
+  version = "0.0.18"
   
   # Create a default knowledge base with OpenSearch Serverless
   create_default_kb = true
