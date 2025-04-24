@@ -149,7 +149,7 @@ resource "aws_secretsmanager_secret_version" "aurora_credentials" {
 module "bedrock" {
   #checkov:skip=CKV_TF_1:Ensure Terraform module sources use a commit hash - We are intentionally pinning to a version number and source.
   source  = "aws-ia/bedrock/aws"
-  version = "0.0.18"
+  version = "0.0.20"
   
   # Create a default knowledge base with OpenSearch Serverless
   create_default_kb = true
@@ -166,6 +166,7 @@ module "bedrock" {
   
   # S3 data source configuration
   create_s3_data_source = true
+  use_existing_s3_data_source = true
   kb_s3_data_source = var.archive_bucket_arn
   
   # Tags

@@ -1,3 +1,10 @@
+resource "random_string" "solution_prefix" {
+  length  = 4
+  special = false
+  upper   = false
+}
+
+
 resource "aws_dynamodb_table" "chat_history" {
   #checkov:skip=CKV_AWS_119:Ensure DynamoDB Tables are encrypted using a KMS Customer Managed CMK - For prototyping we are ok with AWS Managed KMS keys. We recommend you evaluate your need in production. 
   name           = "${var.project_name}-chat-history-${var.environment}"
@@ -32,7 +39,7 @@ resource "aws_s3_bucket" "financial_documents" {
   #checkov:skip=CKV2_AWS_61:We are intentionally not setting up a lifecycle policy on the documents bucket, this way the source documents don't risk being deleted.
   #checkov:skip=CKV2_AWS_62:Ensure S3 buckets should have event notifications enabled - We don't need notifications on this bucket.
   
-  bucket = "${var.project_name}-financial-documents-${var.environment}"
+  bucket = "${random_string.solution_prefix.result}-${var.project_name}-financial-documents-${var.environment}"
 
   tags = {
     Name        = "${var.project_name}-financial-documents-${var.environment}"
