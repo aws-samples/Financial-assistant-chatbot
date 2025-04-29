@@ -70,6 +70,42 @@ The project can be configured through the `terraform.tfvars` file. Key configura
 - `search_type`: Search type for the knowledge base (HYBRID or SEMANTIC)
 - Various model IDs and parameters for the Lambda function
 
+## Ingesting files for the first time
+
+To prime our Knowledge Base we need to ingest one or more documents. The `ingest_files.py` companion script automates that. Simply run:
+
+```
+python ingest_files.py --env dev --region REGION_NAME
+```
+
+## Configuring the frontend application
+
+In order to use the frontend application you will need to pass it some environment variables.
+
+To create a `.env` file containing all the necessary configuration run:
+
+```
+python generate_frontend_env.py --env dev --region REGION_NAME
+```
+
+Copy the results, we will use below.
+
+After that, you should switch back to the main branch of this repository which contains the frontend application.
+
+```
+git checkout main
+cd src/webapp
+```
+
+Now create a `.env` file in this folder and paste the contents of the configuration.
+
+You are now ready to run the frontend
+
+```
+npm ci
+npm run dev
+```
+
 ## Aurora Vector Store Option
 
 The project supports two vector store options:
