@@ -84,12 +84,12 @@ if __name__ == "__main__":
     outputs = get_terraform_outputs(args.env)
 
     print(f"""
-VITE_API_GATEWAY_REST_API_ENDPOINT=""
-VITE_API_FUNCTION_ARN="{outputs['lambda_function_arn']['value']}"
+VITE_API_GATEWAY_REST_API_ENDPOINT="{outputs["rest_api_endpoint"]["value"]}"
+VITE_API_FUNCTION_ARN="{outputs["lambda_function_arn"]["value"]}"
 VITE_AWS_REGION="{args.region}"
-VITE_COGNITO_USER_POOL_ID="{outputs['cognito_user_pool_id']['value']}"
-VITE_COGNITO_USER_POOL_CLIENT_ID="{outputs['cognito_user_pool_client_id']['value']}"
-VITE_COGNITO_IDENTITY_POOL_ID="{outputs['cognito_identity_pool_id']['value']}"
+VITE_COGNITO_USER_POOL_ID="{outputs["cognito_user_pool_id"]["value"]}"
+VITE_COGNITO_USER_POOL_CLIENT_ID="{outputs["cognito_user_pool_client_id"]["value"]}"
+VITE_COGNITO_IDENTITY_POOL_ID="{outputs["cognito_identity_pool_id"]["value"]}"
 VITE_API_NAME="RestAPI"
 VITE_APP_LOGO_URL=""
 VITE_APP_NAME="Financial Assistant powered by GenAI"
