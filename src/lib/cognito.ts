@@ -45,7 +45,7 @@ export default class CognitoResources extends Construct {
         requireDigits: true,
         requireSymbols: true,
       },
-      advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+      standardThreatProtectionMode: cognito.StandardThreatProtectionMode.FULL_FUNCTION,
     });
 
     this.userPoolClient = new cognito.UserPoolClient(
