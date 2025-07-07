@@ -39,7 +39,9 @@ export class BackendStackAurora extends Stack {
 
     const chatHistoryTable = new ddb.Table(this, "ChatHistoryTable", {
       partitionKey: { name: "id", type: ddb.AttributeType.STRING },
-      pointInTimeRecovery: true,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+      },
       billingMode: ddb.BillingMode.PAY_PER_REQUEST,
       encryption: ddb.TableEncryption.AWS_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY, // TODO: change to RETAIN when moving to production
@@ -84,7 +86,7 @@ export class BackendStackAurora extends Stack {
     const botChainFunction = new lambda.Function(this, "BotChain", {
       code: lambda.Code.fromAsset(path.join(__dirname, "lambda"), {
         bundling: {
-          image: lambda.Runtime.NODEJS_20_X.bundlingImage,
+          image: lambda.Runtime.NODEJS_22_X.bundlingImage,
           command: [
             "bash",
             "-c",
@@ -94,12 +96,12 @@ export class BackendStackAurora extends Stack {
         },
       }),
       handler: "index.handler",
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       timeout: Duration.minutes(5),
       memorySize: 512,
-      logFormat: lambda.LogFormat.JSON,
-      systemLogLevel: lambda.SystemLogLevel.INFO,
-      applicationLogLevel: lambda.ApplicationLogLevel.DEBUG, // TODO: change to INFO when moving to production
+      loggingFormat: lambda.LoggingFormat.JSON,
+      systemLogLevelV2: lambda.SystemLogLevel.INFO,
+      applicationLogLevelV2: lambda.ApplicationLogLevel.DEBUG, // TODO: change to INFO when moving to production
       environment: {
         DYNAMODB_HISTORY_TABLE_NAME: chatHistoryTable.tableName,
         NUMBER_OF_RESULTS: "15",
