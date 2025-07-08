@@ -64,8 +64,8 @@ export class SelfQueryRetriever {
 
   #executeKnowledgeBaseQuery = async (dict) => {
     const optimizedQuery  = dict.optimizedQuery;
-    const filters = JSON.parse(dict.filters);
     try {
+      const filters = JSON.parse(dict.filters);
       const kbInput = {
         knowledgeBaseId: this.#kbId, 
         retrievalQuery: {
