@@ -39,7 +39,9 @@ export class BackendStack extends Stack {
 
     const chatHistoryTable = new ddb.Table(this, "ChatHistoryTable", {
       partitionKey: { name: "id", type: ddb.AttributeType.STRING },
-      pointInTimeRecovery: true,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+      },
       billingMode: ddb.BillingMode.PAY_PER_REQUEST,
       encryption: ddb.TableEncryption.AWS_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY, // TODO: change to RETAIN when moving to production
@@ -58,7 +60,7 @@ export class BackendStack extends Stack {
       }
     );
 
-    const archiveKnowledgeBase = new bedrock.KnowledgeBase(this, "KnowledgeBase", {
+    const archiveKnowledgeBase = new bedrock.VectorKnowledgeBase(this, "KnowledgeBase", {
       name: "FinancialDocumentsKnowledgeBase",
       embeddingsModel: bedrock.BedrockFoundationModel.COHERE_EMBED_MULTILINGUAL_V3,
     });
@@ -68,16 +70,16 @@ export class BackendStack extends Stack {
       knowledgeBase: archiveKnowledgeBase,
       dataSourceName: "rag-data-source",
       chunkingStrategy: bedrock.ChunkingStrategy.SEMANTIC,
-      parsingStrategy: bedrock.ParsingStategy.foundationModel({
-          parsingModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0.asIModel(this),
-          parsingPrompt: getParsingPromptTemplate()
+      parsingStrategy: bedrock.ParsingStrategy.foundationModel({
+        parsingModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0,
+        parsingPrompt: getParsingPromptTemplate()
       }),
-  });
+    });
 
     const botChainFunction = new lambda.Function(this, "BotChain", {
       code: lambda.Code.fromAsset(path.join(__dirname, "lambda"), {
         bundling: {
-          image: lambda.Runtime.NODEJS_20_X.bundlingImage,
+          image: lambda.Runtime.NODEJS_22_X.bundlingImage,
           command: [
             "bash",
             "-c",
@@ -87,12 +89,12 @@ export class BackendStack extends Stack {
         },
       }),
       handler: "index.handler",
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       timeout: Duration.minutes(5),
       memorySize: 512,
-      logFormat: lambda.LogFormat.JSON,
-      systemLogLevel: lambda.SystemLogLevel.INFO,
-      applicationLogLevel: lambda.ApplicationLogLevel.DEBUG, // TODO: change to INFO when moving to production
+      loggingFormat: lambda.LoggingFormat.JSON,
+      systemLogLevelV2: lambda.SystemLogLevel.INFO,
+      applicationLogLevelV2: lambda.ApplicationLogLevel.DEBUG, // TODO: change to INFO when moving to production
       environment: {
         DYNAMODB_HISTORY_TABLE_NAME: chatHistoryTable.tableName,
         NUMBER_OF_RESULTS: "15",
@@ -102,7 +104,7 @@ export class BackendStack extends Stack {
         CHAT_MODEL_ID: "anthropic.claude-3-5-sonnet-20240620-v1:0",
         LANGUAGE: "english",
         LANGCHAIN_VERBOSE: "false",
-        KNOWLEDGE_BASE_ID : archiveKnowledgeBase.knowledgeBaseId,
+        KNOWLEDGE_BASE_ID: archiveKnowledgeBase.knowledgeBaseId,
         SEARCH_TYPE: "HYBRID"
       },
     });
@@ -189,14 +191,25 @@ export class BackendStack extends Stack {
       value: archiveKnowledgeBase.knowledgeBaseId,
     });
 
-  new CfnOutput(this, "ResumeBucketName", {
+    new CfnOutput(this, "ResumeBucketName", {
       value: archiveBucket.bucketName,
     });
 
-  new CfnOutput(this, "DataSourceId", {
+    new CfnOutput(this, "DataSourceId", {
       value: archiveBucketDataSource.dataSourceId,
     });
 
+    NagSuppressions.addResourceSuppressionsByPath(
+      this,
+      "/BackendStack/OpenSearchIndexCRProvider/CustomResourcesFunction/Resource",
+      [
+        {
+          id: "AwsSolutions-L1",
+          reason: "The internal lambda resource for the opensearch custom provider in the KB has a non-latest lambda version",
+        }
+      ],
+      true,
+    )
 
     NagSuppressions.addResourceSuppressions(botChainFunction.role!, [
       {

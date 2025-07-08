@@ -14,6 +14,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import {
+  Duration,
   aws_iam as iam,
   aws_cognito as cognito,
   CfnOutput,
@@ -45,7 +46,8 @@ export default class CognitoResources extends Construct {
         requireDigits: true,
         requireSymbols: true,
       },
-      advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
+      mfa: cognito.Mfa.OPTIONAL,
+      featurePlan: cognito.FeaturePlan.PLUS,
     });
 
     this.userPoolClient = new cognito.UserPoolClient(
@@ -162,6 +164,11 @@ export default class CognitoResources extends Construct {
         id: "AwsSolutions-COG2",
         reason: "MFA not required for Cognito during prototype engagement",
       },
+      {
+        id: 'AwsSolutions-COG3',
+        reason:
+          'Advanced Security Features is deprecated in favor of the Plus feature plan.',
+      }
     ]);
 
     NagSuppressions.addResourceSuppressions(allowLambdaAccessPolicy, [
