@@ -60,7 +60,7 @@ export class BackendStack extends Stack {
       }
     );
 
-    const archiveKnowledgeBase = new bedrock.KnowledgeBase(this, "KnowledgeBase", {
+    const archiveKnowledgeBase = new bedrock.VectorKnowledgeBase(this, "KnowledgeBase", {
       name: "FinancialDocumentsKnowledgeBase",
       embeddingsModel: bedrock.BedrockFoundationModel.COHERE_EMBED_MULTILINGUAL_V3,
     });
@@ -70,8 +70,8 @@ export class BackendStack extends Stack {
       knowledgeBase: archiveKnowledgeBase,
       dataSourceName: "rag-data-source",
       chunkingStrategy: bedrock.ChunkingStrategy.SEMANTIC,
-      parsingStrategy: bedrock.ParsingStategy.foundationModel({
-        parsingModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0.asIModel(this),
+      parsingStrategy: bedrock.ParsingStrategy.foundationModel({
+        parsingModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_V1_0,
         parsingPrompt: getParsingPromptTemplate()
       }),
     });
