@@ -21,6 +21,6 @@
     "@smithy/protocol-http": "^3.3.0",
     "@smithy/signature-v4": "^2.3.0",
     "@smithy/util-utf8": "^2.3.0",
-    "langchain": "^0.3.2"
+    "langchain": "^0.3.37"
   }
 }
