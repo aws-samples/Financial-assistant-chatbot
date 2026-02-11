@@ -14,7 +14,7 @@
     "@aws-sdk/lib-dynamodb": "^3.504.0",
     "@aws-sdk/types": "^3.664.0",
     "@langchain/aws": "^0.1.1",
-    "@langchain/community": "^0.3.5",
+    "@langchain/community": "^1.1.14",
     "@langchain/core": "^0.3.11",
     "@langchain/openai": "^0.3.7",
     "@smithy/eventstream-codec": "^2.2.0",
